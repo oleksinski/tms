@@ -148,6 +148,35 @@
         }
     }
 
+    /**
+     * td[6] - Logged start time
+     * td[7] - Logged end time
+     * @param tdNumber
+     * @returns {number}
+     */
+    function getTimeDiffMinutes(tdNumber) {
+        var date = getData('now');
+        var dateFormatted = formatDate(date);
+
+        var tr = [].filter.call(document.querySelectorAll('td[role="gridcell"]'), function (el) {
+            return el.innerHTML.trim() === dateFormatted;
+        }).map(function(el){
+            return el.parentElement;
+        }).shift();
+
+        if (tr) {
+            var tds = tr.getElementsByTagName('td');
+            if (tds && tds.length >= (tdNumber + 1)) {
+                var time = tds[tdNumber].innerHTML.split(':');
+                var hour = time[0], mins = time[1];
+                return Math.abs(date - new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, mins))/1000/60;
+            }
+        }
+        return 0;
+    }
+
+
+
     function getData(attr) {
 
         if (testMode) {
@@ -187,27 +216,11 @@
                         return actualMins;
                     }).call(this);
                     break;
+                case 'workedMinutesToday':
+                    val = getTimeDiffMinutes(6);
+                    break;
                 case 'workedMinutesAfterLoggedEndTimeToday':
-                    val = (function () {
-                        var date = getData('now');
-                        var dateFormatted = formatDate(date);
-
-                        var tr = [].filter.call(document.querySelectorAll('td[role="gridcell"]'), function (el) {
-                            return el.innerHTML.trim() === dateFormatted;
-                        }).map(function(el){
-                            return el.parentElement;
-                        }).shift();
-
-                        if (tr) {
-                            var tds = tr.getElementsByTagName('td');
-                            if (tds && tds.length >= 8) {
-                                var time = tds[7].innerHTML.split(':');
-                                var hour = time[0], mins = time[1];
-                                return Math.abs(date - new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, mins))/1000/60;
-                            }
-                        }
-                        return 0;
-                    }).call(this);
+                    val = getTimeDiffMinutes(7);
                     break;
                 case 'now':
                     val = new Date();
@@ -226,9 +239,14 @@
 
     var workedLoggedMinutes = getData('workedMinutes');
     var workedMinutesAfterLoggedEndTimeToday = getData('workedMinutesAfterLoggedEndTimeToday');
-    var workedMinutes = workedLoggedMinutes + workedMinutesAfterLoggedEndTimeToday;
+    var workedMinutesTotal = workedLoggedMinutes + workedMinutesAfterLoggedEndTimeToday;
 
-    var leftTotalMinutes = expectedMinutes - workedMinutes;
+    var workedMinutesToday = getData('workedMinutesToday');
+    if (workedMinutesToday > 60) {
+        workedMinutesToday -= 60; // lunch time
+    }
+
+    var leftTotalMinutes = expectedMinutes - workedMinutesTotal;
     var leftTodayMinutes = getWorkingMinsLeft(date);
 
     var workingDaysInMonth = getWorkingDaysInMonth(date);
@@ -245,8 +263,9 @@
     }
 
     return {
+        'Worked today': formatMinutes(workedMinutesToday),
         'Time left': timeLeft,
-        'Forecast (ratio 1.0)': formatMinutes(leftMPerDayMinutes) + ' / ' + workingDaysLeftInMonth + ' days left',
+        'Ratio 1.0 forecast': formatMinutes(leftMPerDayMinutes) + ' / ' + workingDaysLeftInMonth + ' days left',
         'Working days': ('' + workingDaysInMonth)
     };
 
