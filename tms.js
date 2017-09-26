@@ -234,11 +234,19 @@
     var workingDaysInMonth = getWorkingDaysInMonth(date);
     var workingDaysLeftInMonth = getWorkingDaysInMonthLeft(date);
 
-    var leftMPerDayM = workingDaysLeftInMonth > 0 ? (leftTotalMinutes - leftTodayMinutes) / workingDaysLeftInMonth : 0;
+    var leftMPerDayMinutes = 0;
+    if (workingDaysLeftInMonth > 0) {
+        leftMPerDayMinutes = (leftTotalMinutes - leftTodayMinutes) / workingDaysLeftInMonth;
+    }
+
+    var timeLeft = formatMinutes(leftTotalMinutes);
+    if (leftTodayMinutes > 0) {
+        timeLeft += ' (+ "' + formatMinutes(leftTodayMinutes) + '" till EOD)';
+    }
 
     return {
-        'Time left': formatMinutes(leftTotalMinutes) + ' (+ "' + formatMinutes(leftTodayMinutes) + '" till EOD)',
-        'Forecast (ratio 1.0)': formatMinutes(leftMPerDayM) + ' / ' + workingDaysLeftInMonth + ' days left',
+        'Time left': timeLeft,
+        'Forecast (ratio 1.0)': formatMinutes(leftMPerDayMinutes) + ' / ' + workingDaysLeftInMonth + ' days left',
         'Working days': ('' + workingDaysInMonth)
     };
 
