@@ -237,9 +237,9 @@
     var leftMPerDayM = workingDaysLeftInMonth > 0 ? (leftTotalMinutes - leftTodayMinutes) / workingDaysLeftInMonth : 0;
 
     return {
-        'Left': formatMinutes(leftTotalMinutes) + ' (+ "' + formatMinutes(leftTodayMinutes) + '" till EOD)',
-        'Forecast': formatMinutes(leftMPerDayM) + ' / ' + workingDaysLeftInMonth + ' days left',
-        'Days in month': ('' + workingDaysInMonth)
+        'Time left': formatMinutes(leftTotalMinutes) + ' (+ "' + formatMinutes(leftTodayMinutes) + '" till EOD)',
+        'Forecast (ratio 1.0)': formatMinutes(leftMPerDayM) + ' / ' + workingDaysLeftInMonth + ' days left',
+        'Working days': ('' + workingDaysInMonth)
     };
 
 })(false);
