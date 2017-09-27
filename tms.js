@@ -169,41 +169,45 @@
             if (tds && tds.length >= (tdNumber + 1)) {
                 var time = tds[tdNumber].innerHTML.split(':');
                 var hour = time[0], mins = time[1];
-                return Math.abs(date - new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, mins))/1000/60;
+                return Math.round(Math.abs(date - new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, mins))/1000/60);
             }
         }
-        return 0;
+
+        return Number.NaN;
     }
 
+    function getWorkedMinutesToday() {
+        return getTimeDiffMinutes(6);
+    }
 
+    function getWorkedMinutesAfterLoggedEndTimeToday() {
+        return getTimeDiffMinutes(7);
+    }
 
-    function getData(attr) {
+    function getData(key) {
+
+        var val = null;
 
         if (testMode) {
-            var year = 2017;
-            var month = 10;
-            var day = 15;
-            var hour = 15;
-            var mins = 12;
             var values = {
-                'expected': '168h 0min (96h 0min)',
-                'actual': '95h 13min',
-                'workedMinutesAfterLoggedEndTimeToday': getDateWithHumanReadableParams(year, month, day, hour, mins),
-                'now': getDateWithHumanReadableParams(year, month, day, hour, mins),
+                'expectedMinutes': getMinutes('168h 0min (96h 0min)'),
+                'workedLoggedMinutes': getMinutes('95h 13min'),
+                'workedMinutesToday': 100,
+                'workedMinutesAfterLoggedEndTimeToday': 75,
+                'now': getDateWithHumanReadableParams(2017, 9, 27, 10, 44),
             };
-            return values[attr];
-        } else {
-            var val = null;
-
+            val = values[key];
+        }
+        else {
             var selector = function (s) {
                 return $("input[ng-model='" + s + "']").val();
             }
 
-            switch (attr) {
+            switch (key) {
                 case 'expectedMinutes':
                     val = getMinutes(selector('attendance.BothExpected'));
                     break;
-                case 'workedMinutes':
+                case 'workedLoggedMinutes':
 
                     //val = getMinutes(selector('attendance.Actual'));
 
@@ -217,56 +221,49 @@
                     }).call(this);
                     break;
                 case 'workedMinutesToday':
-                    val = getTimeDiffMinutes(6);
+                    val = getWorkedMinutesToday();
                     break;
                 case 'workedMinutesAfterLoggedEndTimeToday':
-                    val = getTimeDiffMinutes(7);
+                    val = getWorkedMinutesAfterLoggedEndTimeToday();
                     break;
                 case 'now':
                     val = new Date();
                     break;
             }
-
-            return val;
         }
+
+        //console.log(key + ' = ', val);
+
+        return val;
     }
 
-    // ---
+    return (function () {
+        var date = getData('now');
 
-    var date = getData('now');
+        var expectedMinutes = getData('expectedMinutes');
 
-    var expectedMinutes = getData('expectedMinutes');
+        var workedLoggedMinutes = getData('workedLoggedMinutes');
+        var workedMinutesAfterLoggedEndTimeToday = getData('workedMinutesAfterLoggedEndTimeToday');
+        var workedMinutesTotal = workedLoggedMinutes + workedMinutesAfterLoggedEndTimeToday;
 
-    var workedLoggedMinutes = getData('workedMinutes');
-    var workedMinutesAfterLoggedEndTimeToday = getData('workedMinutesAfterLoggedEndTimeToday');
-    var workedMinutesTotal = workedLoggedMinutes + workedMinutesAfterLoggedEndTimeToday;
+        var workedMinutesToday = getData('workedMinutesToday');
+        if (workedMinutesToday > 60 && date.getHours() > 13) {
+            workedMinutesToday -= 60; // distract an hour as lunch time
+        }
 
-    var workedMinutesToday = getData('workedMinutesToday');
-    if (workedMinutesToday > 60) {
-        workedMinutesToday -= 60; // lunch time
-    }
+        var leftTotalMinutes = expectedMinutes - workedMinutesTotal;
 
-    var leftTotalMinutes = expectedMinutes - workedMinutesTotal;
-    var leftTodayMinutes = getWorkingMinsLeft(date);
+        var workingDaysInMonth = getWorkingDaysInMonth(date);
+        var workingDaysLeftInMonth = getWorkingDaysInMonthLeft(date);
 
-    var workingDaysInMonth = getWorkingDaysInMonth(date);
-    var workingDaysLeftInMonth = getWorkingDaysInMonthLeft(date);
+        var leftMPerDayMinutes = workingDaysLeftInMonth > 0 ? leftTotalMinutes / workingDaysLeftInMonth : 0;
 
-    var leftMPerDayMinutes = 0;
-    if (workingDaysLeftInMonth > 0) {
-        leftMPerDayMinutes = (leftTotalMinutes - leftTodayMinutes) / workingDaysLeftInMonth;
-    }
-
-    var timeLeft = formatMinutes(leftTotalMinutes);
-    if (leftTodayMinutes > 0) {
-        timeLeft += ' (+ "' + formatMinutes(leftTodayMinutes) + '" till EOD)';
-    }
-
-    return {
-        'Worked today': formatMinutes(workedMinutesToday),
-        'Time left': timeLeft,
-        'Ratio 1.0 forecast': formatMinutes(leftMPerDayMinutes) + ' / ' + workingDaysLeftInMonth + ' days left',
-        'Working days': ('' + workingDaysInMonth)
-    };
+        return {
+            'Worked today': formatMinutes(workedMinutesToday),
+            'Total left': formatMinutes(leftTotalMinutes),
+            'Ratio 1.0 forecast': formatMinutes(leftMPerDayMinutes) + ' * ' + workingDaysLeftInMonth + ' days left',
+            'Working month days': ('' + workingDaysInMonth)
+        };
+    })();
 
 })(false);
