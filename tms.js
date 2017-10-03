@@ -173,7 +173,7 @@
             }
         }
 
-        return Number.NaN;
+        return 0;
     }
 
     function getWorkedMinutesToday() {
@@ -260,9 +260,10 @@
 
         return {
             'Worked today': formatMinutes(workedMinutesToday),
+            'Daily ratio 1.0 forecast': formatMinutes(leftMPerDayMinutes),
             'Total left': formatMinutes(leftTotalMinutes),
-            'Ratio 1.0 forecast': formatMinutes(leftMPerDayMinutes) + ' * ' + workingDaysLeftInMonth + ' days left',
-            'Working month days': ('' + workingDaysInMonth)
+            'Working days left': '' + workingDaysLeftInMonth,
+            'Working days total': '' + workingDaysInMonth
         };
     })();
 
