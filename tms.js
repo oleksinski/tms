@@ -109,6 +109,8 @@
             r += Math.floor(m) + 'm';
         }
 
+        r = r || '0h 0m';
+
         return r;
     }
 
@@ -155,6 +157,8 @@
      * @returns {number}
      */
     function getTimeDiffMinutes(tdNumber) {
+        var result = 0;
+
         var date = getData('now');
         var dateFormatted = formatDate(date);
 
@@ -167,13 +171,18 @@
         if (tr) {
             var tds = tr.getElementsByTagName('td');
             if (tds && tds.length >= (tdNumber + 1)) {
-                var time = tds[tdNumber].innerHTML.split(':');
-                var hour = time[0], mins = time[1];
-                return Math.round(Math.abs(date - new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, mins))/1000/60);
+                var tdsValue = tds[tdNumber].innerHTML.trim();
+                if (tdsValue && tdsValue.length > 0) {
+                    var time = tdsValue.split(':');
+                    var hour = time[0], mins = time[1];
+                    result = Math.round(
+                        Math.abs(date - new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, mins)) / 1000 / 60
+                    );
+                }
             }
         }
 
-        return 0;
+        return result;
     }
 
     function getWorkedMinutesToday() {
@@ -246,15 +255,15 @@
         var workedMinutesAfterLoggedEndTimeToday = getData('workedMinutesAfterLoggedEndTimeToday');
         var workedMinutesTotal = workedLoggedMinutes + workedMinutesAfterLoggedEndTimeToday;
 
+        var workingDaysInMonth = getWorkingDaysInMonth(date);
+        var workingDaysLeftInMonth = getWorkingDaysInMonthLeft(date);
+
         var workedMinutesToday = getData('workedMinutesToday');
         if (workedMinutesToday > 60 && date.getHours() > 13) {
             workedMinutesToday -= 60; // distract an hour as lunch time
         }
 
         var leftTotalMinutes = expectedMinutes - workedMinutesTotal;
-
-        var workingDaysInMonth = getWorkingDaysInMonth(date);
-        var workingDaysLeftInMonth = getWorkingDaysInMonthLeft(date);
 
         var leftMPerDayMinutes = workingDaysLeftInMonth > 0 ? leftTotalMinutes / workingDaysLeftInMonth : 0;
 
