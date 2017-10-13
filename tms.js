@@ -1,7 +1,17 @@
 (function (testMode) {
 
+    if (window.console && console.clear) {
+        console.clear();
+    }
+
+    function __dbg() {
+        if (window.console && console.log) {
+            console.log.apply(this, Array.prototype.slice.call(arguments));
+        }
+    }
+
     if (testMode) {
-        console.log('Test mode ON');
+        __dbg('Test mode ON');
     }
 
     var weekday = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -64,11 +74,11 @@
         var end = getEndOfWorkingDay(date);
 
         var dateMs = date.getTime();
-        //console.log('date time:', date, dateMs);
+        //__dbg('date time:', date, dateMs);
         var endMs = end.getTime();
-        //console.log('end time:', end, endMs);
+        //__dbg('end time:', end, endMs);
         var mins = Math.round((endMs - dateMs) / 1000 / 60);
-        //console.log('Mins diff', mins);
+        //__dbg('Mins diff', mins);
         return mins > 0 ? mins : 0;
     }
 
@@ -241,7 +251,7 @@
             }
         }
 
-        //console.log(key + ' = ', val);
+        //__dbg(key + ' = ', val);
 
         return val;
     }
