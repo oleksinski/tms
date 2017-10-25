@@ -94,7 +94,7 @@
         }
         var lastDayN = getDaysInMonth(date);
         var businessDays = 0;
-        while (dateDayN < lastDayN) {
+        while (dateDayN <= lastDayN) {
             var d = new Date(date.getFullYear(), date.getMonth(), dateDayN);
             if (isWorkingDay(d)) {
                 businessDays++;
