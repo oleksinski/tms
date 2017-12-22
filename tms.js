@@ -27,7 +27,19 @@
         getDateWithHumanReadableParams(2017, 6, 5),
         getDateWithHumanReadableParams(2017, 6, 28),
         getDateWithHumanReadableParams(2017, 8, 24),
-        getDateWithHumanReadableParams(2017, 10, 16)
+        getDateWithHumanReadableParams(2017, 10, 16),
+        getDateWithHumanReadableParams(2017, 12, 25),
+        getDateWithHumanReadableParams(2018, 1, 1),
+        getDateWithHumanReadableParams(2018, 1, 8),
+        getDateWithHumanReadableParams(2018, 3, 8),
+        getDateWithHumanReadableParams(2018, 4, 9),
+        getDateWithHumanReadableParams(2018, 5, 1),
+        getDateWithHumanReadableParams(2018, 5, 9),
+        getDateWithHumanReadableParams(2018, 5, 28),
+        getDateWithHumanReadableParams(2018, 6, 28),
+        getDateWithHumanReadableParams(2018, 8, 24),
+        getDateWithHumanReadableParams(2018, 10, 15),
+        getDateWithHumanReadableParams(2018, 12, 25)
     ];
 
     var holidaysTimestamp = bankHolidays.map(function (d) {
@@ -277,13 +289,24 @@
 
         var leftMPerDayMinutes = workingDaysLeftInMonth > 0 ? leftTotalMinutes / workingDaysLeftInMonth : 0;
 
-        return {
+        var onTrack = leftMPerDayMinutes <= 8 * 60;
+
+        var result = {
             'Worked today': formatMinutes(workedMinutesToday),
             'Daily ratio 1.0 forecast': formatMinutes(leftMPerDayMinutes),
+            'On track': (onTrack ? 'yes' : 'no'),
             'Total left': formatMinutes(leftTotalMinutes),
             'Working days left': '' + workingDaysLeftInMonth,
             'Working days total': '' + workingDaysInMonth
         };
+
+        for (var key in result) {
+            if (result.hasOwnProperty(key)) {
+                console.log(key + " : " + result[key]);
+            }
+        }
+
+        return '---';
     })();
 
 })(false);
