@@ -271,33 +271,42 @@
     return (function () {
         var date = getData('now');
 
-        var expectedMinutes = getData('expectedMinutes');
-
-        var workedLoggedMinutes = getData('workedLoggedMinutes');
-        var workedMinutesAfterLoggedEndTimeToday = getData('workedMinutesAfterLoggedEndTimeToday');
-        var workedMinutesTotal = workedLoggedMinutes + workedMinutesAfterLoggedEndTimeToday;
-
         var workingDaysInMonth = getWorkingDaysInMonth(date);
         var workingDaysLeftInMonth = getWorkingDaysInMonthLeft(date);
 
+        var workingHoursPerDay = 9;
+        var workingMinutesPerDay = workingHoursPerDay * 60;
+
+        //var expectedMinutes = getData('expectedMinutes');
+        var expectedMinutes = workingDaysInMonth * workingMinutesPerDay;
+
+        var workedLoggedMinutes = getData('workedLoggedMinutes') + (workingDaysInMonth - workingDaysLeftInMonth) * 60;
+        var workedMinutesAfterLoggedEndTimeToday = getData('workedMinutesAfterLoggedEndTimeToday');
+        var workedMinutesTotal = workedLoggedMinutes + workedMinutesAfterLoggedEndTimeToday;
+
         var workedMinutesToday = getData('workedMinutesToday');
-        if (workedMinutesToday > 60 && date.getHours() > 13) {
-            workedMinutesToday -= 60; // distract an hour as lunch time
-        }
+        //if (workedMinutesToday > 60 && date.getHours() > 13) {
+        //    workedMinutesToday -= 60; // distract an hour as lunch time
+        //}
 
         var leftTotalMinutes = expectedMinutes - workedMinutesTotal;
 
         var leftMPerDayMinutes = workingDaysLeftInMonth > 0 ? leftTotalMinutes / workingDaysLeftInMonth : 0;
 
-        var onTrack = leftMPerDayMinutes <= 8 * 60;
+        var workingDebtMinutes = leftTotalMinutes - workingDaysLeftInMonth * workingMinutesPerDay;
+
+        var onTrack = workingDebtMinutes <= 0;
 
         var result = {
             'Worked today': formatMinutes(workedMinutesToday),
+            'Worked total': formatMinutes(workedMinutesTotal),
+            //'Worked today after latest logged time': formatMinutes(workedMinutesAfterLoggedEndTimeToday),
+            //'Working days left': '' + workingDaysLeftInMonth,
+            'Working days': '' + workingDaysInMonth + ' (left ' + workingDaysLeftInMonth + ')',
+            'Expected total': formatMinutes(expectedMinutes),
+            'Left total': formatMinutes(leftTotalMinutes),
             'Daily ratio 1.0 forecast': formatMinutes(leftMPerDayMinutes),
-            'On track': (onTrack ? 'yes' : 'no'),
-            'Total left': formatMinutes(leftTotalMinutes),
-            'Working days left': '' + workingDaysLeftInMonth,
-            'Working days total': '' + workingDaysInMonth
+            'On track?': (onTrack ? 'yes' : 'no (debt ' + formatMinutes(workingDebtMinutes) + ')')
         };
 
         for (var key in result) {
