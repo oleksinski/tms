@@ -306,7 +306,7 @@
             'Expected total': formatMinutes(expectedMinutes),
             'Left total': formatMinutes(leftTotalMinutes),
             'Daily ratio 1.0 forecast': formatMinutes(leftMPerDayMinutes),
-            'On track?': (onTrack ? 'yes' : 'no (debt ' + formatMinutes(workingDebtMinutes) + ')')
+            'On track?': (onTrack ? 'yes (overtime ' + formatMinutes(Math.abs(workingDebtMinutes)) + ')' : 'no (debt ' + formatMinutes(workingDebtMinutes) + ')')
         };
 
         for (var key in result) {
