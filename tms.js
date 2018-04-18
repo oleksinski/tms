@@ -276,6 +276,7 @@
 
         var workingHoursPerDay = 9;
         var workingMinutesPerDay = workingHoursPerDay * 60;
+        var sickLeaveDays = 0;
 
         //var expectedMinutes = getData('expectedMinutes');
         var expectedMinutes = workingDaysInMonth * workingMinutesPerDay;
@@ -283,6 +284,10 @@
         var workedLoggedMinutes = getData('workedLoggedMinutes') + (workingDaysInMonth - workingDaysLeftInMonth) * 60;
         var workedMinutesAfterLoggedEndTimeToday = getData('workedMinutesAfterLoggedEndTimeToday');
         var workedMinutesTotal = workedLoggedMinutes + workedMinutesAfterLoggedEndTimeToday;
+
+        if (sickLeaveDays > 0) {
+            workedMinutesTotal += sickLeaveDays * workingMinutesPerDay - sickLeaveDays * 1 * 60;
+        }
 
         var workedMinutesToday = getData('workedMinutesToday');
         //if (workedMinutesToday > 60 && date.getHours() > 13) {
@@ -295,6 +300,14 @@
 
         var workingDebtMinutes = leftTotalMinutes - workingDaysLeftInMonth * workingMinutesPerDay;
 
+        ////
+
+        var endOfWorkingDayTodayDate = getEndOfWorkingDay(date);
+        var leftMinutesToday = Math.round((endOfWorkingDayTodayDate.getTime() - date.getTime()) / 1000 / 60);
+        if (leftMinutesToday > 0 && workingDebtMinutes > 0) {
+            workingDebtMinutes -= leftMinutesToday;
+        }
+
         var onTrack = workingDebtMinutes <= 0;
 
         var result = {
@@ -304,9 +317,10 @@
             //'Working days left': '' + workingDaysLeftInMonth,
             'Working days': '' + workingDaysInMonth + ' (left ' + workingDaysLeftInMonth + ')',
             'Expected total': formatMinutes(expectedMinutes),
+            'Left today': '' + (leftMinutesToday > 0 ? formatMinutes(leftMinutesToday) : '0'),
             'Left total': formatMinutes(leftTotalMinutes),
             'Daily ratio 1.0 forecast': formatMinutes(leftMPerDayMinutes),
-            'On track?': (onTrack ? 'yes (overtime ' + formatMinutes(Math.abs(workingDebtMinutes)) + ')' : 'no (debt ' + formatMinutes(workingDebtMinutes) + ')')
+            'On track?': (onTrack ? 'yes (overtime ' + formatMinutes(Math.abs(workingDebtMinutes)) + ')' : 'no (debt ' + formatMinutes(workingDebtMinutes) + ' after 18:00)')
         };
 
         for (var key in result) {
