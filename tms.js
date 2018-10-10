@@ -17,6 +17,7 @@
     var weekday = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
     var bankHolidays = [
+        // 2017
         getDateWithHumanReadableParams(2017, 1, 2),
         getDateWithHumanReadableParams(2017, 1, 9),
         getDateWithHumanReadableParams(2017, 3, 8),
@@ -29,6 +30,8 @@
         getDateWithHumanReadableParams(2017, 8, 24),
         getDateWithHumanReadableParams(2017, 10, 16),
         getDateWithHumanReadableParams(2017, 12, 25),
+
+        // 2018
         getDateWithHumanReadableParams(2018, 1, 1),
         getDateWithHumanReadableParams(2018, 1, 8),
         getDateWithHumanReadableParams(2018, 3, 8),
@@ -39,7 +42,20 @@
         getDateWithHumanReadableParams(2018, 6, 28),
         getDateWithHumanReadableParams(2018, 8, 24),
         getDateWithHumanReadableParams(2018, 10, 15),
-        getDateWithHumanReadableParams(2018, 12, 25)
+        getDateWithHumanReadableParams(2018, 12, 25),
+
+        // 2019
+        getDateWithHumanReadableParams(2019, 1, 1),
+        getDateWithHumanReadableParams(2019, 1, 7),
+        getDateWithHumanReadableParams(2019, 3, 8),
+        getDateWithHumanReadableParams(2019, 4, 29),
+        getDateWithHumanReadableParams(2019, 5, 1),
+        getDateWithHumanReadableParams(2019, 5, 9),
+        getDateWithHumanReadableParams(2019, 6, 17),
+        getDateWithHumanReadableParams(2019, 6, 28),
+        getDateWithHumanReadableParams(2019, 8, 26),
+        getDateWithHumanReadableParams(2019, 10, 14),
+        getDateWithHumanReadableParams(2019, 12, 25)
     ];
 
     var holidaysTimestamp = bankHolidays.map(function (d) {
